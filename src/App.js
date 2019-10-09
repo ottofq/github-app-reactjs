@@ -1,25 +1,64 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import UserCard from "./components/Card";
+import Repo from "./components/Repo";
+import {
+  Container,
+  Input,
+  Button,
+  Grid,
+  CardGroup,
+  Header
+} from "semantic-ui-react";
+import "semantic-ui-css/semantic.min.css";
+import "./App.css";
+import axios from "axios";
 
 function App() {
+  const [user, setUser] = useState("");
+  const [stars, setStars] = useState(0);
+  const [userData, setUserData] = useState({});
+  const [repos, setRepos] = useState([]);
+
+  async function searchUser() {
+    const response = await axios.get(`https://api.github.com/users/${user}`);
+    const responseRepo = await axios.get(
+      `https://api.github.com/users/${user}/repos`
+    );
+    const stars = await axios.get(
+      `https://api.github.com/users/${user}/starred`
+    );
+    setUserData(response.data);
+    setRepos(responseRepo.data);
+    setStars(stars.data.length);
+    console.log(response.data);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container textAlign="center">
+      <Input
+        className="margin"
+        value={user}
+        onChange={e => setUser(e.target.value)}
+        icon="user"
+        placeholder="Insira o usuário do GitHub"
+      />
+      <Button className="margin" onClick={searchUser}>
+        Buscar
+      </Button>
+      {userData.login && <UserCard user={userData} star={stars} />}
+      {!!repos.length && (
+        <Grid columns={3} divided centered>
+          <Header textAlign="center" as="h2">
+            Repositórios
+          </Header>
+          <CardGroup centered>
+            {repos.map(repo => {
+              return <Repo key={repo.id} repo={repo} />;
+            })}
+          </CardGroup>
+        </Grid>
+      )}
+    </Container>
   );
 }
 
