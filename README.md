@@ -1,4 +1,4 @@
-greact.semantic-ui.com/)
+Uma simples aplicação ReactJS para exibir informações de usuário do Github usando componentes visuais do [Semantic UI React](https://react.semantic-ui.com/)
 
 ## Scripts
 
